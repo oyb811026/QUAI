@@ -80,7 +80,7 @@ ExecStart=/bin/bash -c 'cd /root/go-quai && ./build/bin/go-quai start \\
   --node.genesis-nonce 6224362036655375007 \\
   --node.quai-coinbases "$quai_coinbases" \\
   --node.qi-coinbases "$qi_coinbases" \\
-  --node.coinbase-lockup 7 \\
+  --node.coinbase-lockup 3 \\
   --node.miner-preference "0"'
 Restart=on-failure
 StandardOutput=journal
