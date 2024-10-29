@@ -240,7 +240,7 @@ while true; do
   echo "5) 查看区块高度"
   echo "6) 查看节点绑定钱包"
   echo "7) 查看爆块情况"
-  echo "8) 一键更新节点至V0.39版本"
+  echo "8) 一键更新节点至V0.39.1版本"
   echo "9) 检测当前节点版本号"
   echo "10) 退出"
   read -p "請選擇一個選項: " choice
