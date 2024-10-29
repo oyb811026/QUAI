@@ -42,7 +42,7 @@ update_node(){
   #wget -P ~/go-quai/build/bin/  http://147.124.222.123:8080/go-quai
   #chmod u+x ~/go-quai/build/bin/go-quai
   #git fetch --tags 
-  #git checkout v0.39.1 
+  #git checkout v0.39.2 
   #make go-quai
   create_and_start_services
 }
@@ -209,9 +209,9 @@ sudo journalctl -u go-quai-stratum | grep "Miner submitted a block"
 
 check_version(){
 	if ~/go-quai/build/bin/go-quai -h| grep -q "coinbase-lockup"; then
-    echo -e "\033[1;32m恭喜老板，当前go-quai节点版本是v0.39.1，无需升级，比特猎人伴您走向财富自由！！！！\033[0m"
+    echo -e "\033[1;32m恭喜老板，当前go-quai节点版本是v0.39.2，无需升级，比特猎人伴您走向财富自由！！！！\033[0m"
 	else
-       echo -e "\033[1;31m当前go-quai节点低于版本v0.39.1版本，请立刻执行选项8进行一键升级，否则无法挖矿！！！！\033[0m"
+       echo -e "\033[1;31m当前go-quai节点低于版本v0.39.2版本，请立刻执行选项8进行一键升级，否则无法挖矿！！！！\033[0m"
 	fi
 	echo -e "\n请核对go-quai版本号，返回请按回车键..."
     read -r  # 等待用户按下回车
@@ -240,7 +240,7 @@ while true; do
   echo "5) 查看区块高度"
   echo "6) 查看节点绑定钱包"
   echo "7) 查看爆块情况"
-  echo "8) 一键更新节点至V0.39.1版本"
+  echo "8) 一键更新节点至V0.39.2版本"
   echo "9) 检测当前节点版本号"
   echo "10) 退出"
   read -p "請選擇一個選項: " choice
