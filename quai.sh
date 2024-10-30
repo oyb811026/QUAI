@@ -13,16 +13,17 @@ download_and_update() {
     cd qdata
 
     echo "下载压缩文件..."
-    wget http://147.124.222.123:8080/go-quai.tar.gz -O quai.tar.gz
+    wget wget https://storage.googleapis.com/colosseum-db/goldenage_backups/quai-goldenage-backup.tgz
+ -O quai-goldenage-backup.tgz
 
     echo "解压缩文件..."
-    tar -vxf quai.tar.gz
+    tar -xvf quai-goldenage-backup.tgz
 
     echo "删除旧的 go-quai 目录..."
     rm -rf ~/.local/share/go-quai
 
     echo "将 go-quai 目录复制到指定位置..."
-    cp -r go-quai ~/.local/share/go-quai
+    cp -r quai-goldenage-backup ~/.local/share/go-quai
 
     echo "下载和更新完成。"
     create_and_start_services
