@@ -20,50 +20,41 @@ download_and_update() {
   echo "刪除舊的 go-quai 目錄..."
   rm -rf ~/.local/share/go-quai
 
-  echo "再次解壓縮文件..."
-  tar -xvf  quai.tar.gz
-
-  echo "複製 go-quai 到指定目錄..."
+  echo "將 go-quai 目錄複製到指定位置..."
   cp -r go-quai ~/.local/share/go-quai
 
   echo "下載和更新完成。"
   create_and_start_services
 }
 
-resume_service(){
-  create_and_start_services
-}
-
-update_node(){
+update_node() {
+  echo "停止你的节点..."
   stop_and_remove_service
   stop_and_remove_stratum_service
-  #download_node
-  #rm -rf ~/go-quai/build/bin/go-quai
-  #wget -P ~/go-quai/build/bin/  http://147.124.222.123:8080/go-quai
-  #chmod u+x ~/go-quai/build/bin/go-quai
-  #git fetch --tags 
-  #git checkout v0.39.2 
-  #make go-quai
+
+  echo "刪除舊的 Peer DB..."
+  rm -rf ~/.local/share/go-quai/0xba33a6807db85d5de6f51ff95c4805feaa9b81951a57e43254117d489031e96f
+
+  echo "更新到 v0.39.3..."
+  cd ~/go-quai
+  git fetch --tags
+  git checkout v0.39.3
+  make go-quai
+
+  echo "啟動服务..."
   create_and_start_services
 }
 
-download_node()
-{
-  rm -rf ~/go-quai/build/bin/go-quai
-  wget -P ~/go-quai/build/bin/  http://147.124.222.123:8080/go-quai
-  chmod u+x ~/go-quai/build/bin/go-quai
+resume_service() {
+  create_and_start_services
 }
 
-view_height() {
-tail -f ~/go-quai/nodelogs/* | grep Appended
-}
-# 定義創建和啟動 go-quai 和 go-quai-stratum 服務函數
 create_and_start_services() {
   read -p "請輸入 quai-coinbases 地址: " quai_coinbases
   read -p "請輸入 qi-coinbases 地址: " qi_coinbases
   stop_and_remove_service
   stop_and_remove_stratum_service
-  download_node
+  
   # 創建 go-quai 服務文件
   SERVICE_FILE="/etc/systemd/system/go-quai.service"
   sudo bash -c "cat > $SERVICE_FILE" <<EOL
@@ -124,125 +115,54 @@ EOL
   sudo systemctl daemon-reload
 
   echo "啟動並啟用 go-quai 和 go-quai-stratum 服務..."
-  sudo systemctl start go-quai
-  sudo systemctl enable go-quai
   sudo systemctl start go-quai-stratum
   sudo systemctl enable go-quai-stratum
-  sudo systemctl restart systemd-journald 
+  
   echo "Go-Quai 和 Go-Quai Stratum 服務已啟動並設置為開機自啟動。"
 }
 
-# 定義停止並刪除 go-quai 和 go-quai-stratum 服務函數
-stop_and_remove_services() {
-  echo "停止 go-quai 和 go-quai-stratum 服務..."
+stop_and_remove_service() {
+  echo "停止 go-quai 服務..."
   sudo systemctl stop go-quai
-  #sudo systemctl stop go-quai-stratum
-
-  echo "禁用 go-quai 和 go-quai-stratum 服務..."
   sudo systemctl disable go-quai
-  #sudo systemctl disable go-quai-stratum
-
-  echo "刪除 go-quai 和 go-quai-stratum 服務文件..."
-  sudo rm /etc/systemd/system/go-quai.service
-  #sudo rm /etc/systemd/system/go-quai-stratum.service
-
-  echo "重新加載 systemd 配置..."
+  sudo rm -f /etc/systemd/system/go-quai.service
   sudo systemctl daemon-reload
-
-  echo "Go-Quai 和 Go-Quai Stratum 服務已停止並刪除。"
+  echo "go-quai 服務已停止並刪除。"
 }
 
-# 定義查看 go-quai 服務輸出函數
+stop_and_remove_stratum_service() {
+  echo "停止 go-quai-stratum 服務..."
+  sudo systemctl stop go-quai-stratum
+  sudo systemctl disable go-quai-stratum
+  sudo rm -f /etc/systemd/system/go-quai-stratum.service
+  sudo systemctl daemon-reload
+  echo "go-quai-stratum 服務已停止並刪除。"
+}
+
 view_go_quai_logs() {
   echo "查看 go-quai 服務輸出..."
   sudo journalctl -u go-quai -f
 }
 
-
-# 定義停止並刪除 go-quai 服務函數
-stop_and_remove_service() {
-  echo "停止 go-quai 服務..."
-  sudo systemctl stop go-quai
-
-  echo "禁用 go-quai 服務..."
-  sudo systemctl disable go-quai
-
-  echo "刪除 go-quai 服務文件..."
-  sudo rm /etc/systemd/system/go-quai.service
-
-  echo "重新加載 systemd 配置..."
-  sudo systemctl daemon-reload
-
-  echo "go-quai 服務已停止並刪除。"
-}
-
-# 定義停止並刪除 go-quai-stratum 服務函數
-stop_and_remove_stratum_service() {
-  echo "停止 go-quai-stratum 服務..."
-  sudo systemctl stop go-quai-stratum
-
-  echo "禁用 go-quai-stratum 服務..."
-  sudo systemctl disable go-quai-stratum
-
-  echo "刪除 go-quai-stratum 服務文件..."
-  sudo rm /etc/systemd/system/go-quai-stratum.service
-
-  echo "重新加載 systemd 配置..."
-  sudo systemctl daemon-reload
-
-  echo "go-quai-stratum 服務已停止並刪除。"
-}
-
-view_wallet(){
-cat /etc/systemd/system/go-quai.service
-    echo -e "\n请核对节点绑定钱包，返回请按回车键..."
-    read -r  # 等待用户按下回车
-}
-
-view_blocks(){
-cat /etc/systemd/system/go-quai.service
-sudo journalctl -u go-quai-stratum | grep "Miner submitted a block"
-    echo -e "\n请核对节点爆块情况，返回请按回车键..."
-    read -r  # 等待用户按下回车
-    return
-}
-
-check_version(){
-	if ~/go-quai/build/bin/go-quai -h| grep -q "coinbase-lockup"; then
-    echo -e "\033[1;32m恭喜老板，当前go-quai节点版本是v0.39.2，无需升级，比特猎人伴您走向财富自由！！！！\033[0m"
-	else
-       echo -e "\033[1;31m当前go-quai节点低于版本v0.39.2版本，请立刻执行选项8进行一键升级，否则无法挖矿！！！！\033[0m"
-	fi
-	echo -e "\n请核对go-quai版本号，返回请按回车键..."
-    read -r  # 等待用户按下回车
-}
-
-# 定義查看 go-quai-stratum 服務輸出函數
-view_go_quai_stratum_logs() {
-  echo "查看 go-quai-stratum 服務輸出..."
-  sudo journalctl -u go-quai-stratum -f
+check_version() {
+  if ~/go-quai/build/bin/go-quai -h | grep -q "coinbase-lockup"; then
+    echo -e "\033[1;32m恭喜老板，当前go-quai节点版本是v0.39.3，无需升级。\033[0m"
+  else
+    echo -e "\033[1;31m当前go-quai节点低于版本v0.39.3版本，请立刻更新。\033[0m"
+  fi
+  read -p "返回请按回车键..."
 }
 
 # 顯示選單
 while true; do
-	echo "==================比特猎人/BitHunter一键部署脚本(One-click deployment)==============="
-	echo "比特猎人社区出品，仅供会员学习使用，请勿用于商业用途(Produced by the BitHunter community,Please do not use for commercial purposes)"
-	echo "比特猎人官方电报群(Telegram Group)：https://t.me/BitHunterCN"
-	echo "比特猎人官方推特(Twitter/X)：https://x.com/BitHunterCN"
-	echo "比特猎人个人电报号(Telegram)：@bithunter1688"
-	echo "4折vps优惠购买链接(40% off VPS discount purchase link)：https://bearhost.us/#/?recommendCode=bithunter"
-	echo "========================================================================"
   echo "選單："
   echo "1) 一键部署quai节点"
   echo "2) 重启quai节点"
   echo "3) 查看 go-quai 节点服務輸出"
   echo "4) 查看 go-quai-stratum 服務輸出"
-  echo "5) 查看区块高度"
-  echo "6) 查看节点绑定钱包"
-  echo "7) 查看爆块情况"
-  echo "8) 一键更新节点至V0.39.2版本"
-  echo "9) 检测当前节点版本号"
-  echo "10) 退出"
+  echo "5) 更新节点到v0.39.3"
+  echo "6) 检测当前节点版本号"
+  echo "7) 退出"
   read -p "請選擇一個選項: " choice
 
   case $choice in
@@ -258,26 +178,16 @@ while true; do
     4)
       view_go_quai_stratum_logs
       ;;
-	5)
-      view_height
+    5)
+      update_node
       ;;
-	6)
-      view_wallet
+    6)
+      check_version
       ;;
-	7)
-      view_blocks
-      ;;
-	8)
-     update_node
-      ;;
-    9)
-     check_version
-      ;;
-    10)
+    7)
       echo "退出程序。"
       break
       ;;
-	  
     *)
       echo "無效選項，請重新選擇。"
       ;;
