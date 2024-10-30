@@ -13,7 +13,7 @@ download_and_update() {
     cd qdata
 
     echo "下载压缩文件..."
-    wget wget https://storage.googleapis.com/colosseum-db/goldenage_backups/quai-goldenage-backup.tgz
+    wget https://storage.googleapis.com/colosseum-db/goldenage_backups/quai-goldenage-backup.tgz
  -O quai-goldenage-backup.tgz
 
     echo "解压缩文件..."
