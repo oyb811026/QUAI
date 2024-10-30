@@ -36,7 +36,7 @@ update_node() {
     echo "删除旧的 Peer DB..."
     rm -rf ~/.local/share/go-quai/0xba33a6807db85d5de6f51ff95c4805feaa9b81951a57e43254117d489031e96f
 
-    echo "更新到 v0.39.3..."
+    echo "更新到 v0.39.4..."
     cd ~/go-quai || exit
     git fetch --tags
     git checkout v0.39.4
